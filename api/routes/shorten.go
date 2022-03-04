@@ -14,17 +14,17 @@ import (
 )
 
 type request struct {
-	URL         string        `json:"url"`
-	CustomShort string        `json:"short"`
-	Expiry      time.Duration `json:"expiry"`
+	URL         	string        `json:"url"`
+	CustomShort 	string        `json:"short"`
+	Expiry      	time.Duration `json:"expiry"`
 }
 
 type response struct {
-	URL            string        `json:"url"`
-	CustomShort    string        `json:"custom_short"`
-	Expiry         time.Duration `json:"expiry"`
-	XrateRemaining int           `json:"rate_remaining"`
-	XrateLimitRest int           `json:"rate_limit_rest"`
+	URL            	string        `json:"url"`
+	CustomShort    	string        `json:"custom_short"`
+	Expiry         	time.Duration `json:"expiry"`
+	XrateRemaining 	int           `json:"rate_remaining"`
+	XrateLimitRest 	time.Duration `json:"rate_limit_rest"`
 }
 
 func ShortenURL(ctx *fiber.Ctx) error {
@@ -96,7 +96,7 @@ func ShortenURL(ctx *fiber.Ctx) error {
 	val, _ = r2.Get(database.Ctx, ctx.IP()).Result()
 	resp.XrateRemaining, _ = strconv.Atoi(val)
 	ttl, _ := r2.TTL(database.Ctx, ctx.IP()).Result()
-	resp.XrateLimitRest = int(ttl / time.Nanosecond / time.Minute)
+	resp.XrateLimitRest = ttl / time.Nanosecond / time.Minute
 	resp.CustomShort = os.Getenv("DOMAIN") + "/" + id
 	return ctx.Status(fiber.StatusOK).JSON(resp)
 }

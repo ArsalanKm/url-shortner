@@ -16,7 +16,7 @@ From alpine
 
 FROM alpine 
 
-RUN adduser -S -D -H /app appuser 
+RUN adduser -S -D -H -h /app appuser 
 
 USER appuser
 

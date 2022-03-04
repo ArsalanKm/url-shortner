@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/ArsalanKm/url-shortner/routes"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 
@@ -26,7 +27,7 @@ func main() {
 }
 
 func setUpRoutes(app *fiber.App) {
-	// app.Get("/:url", func(ctx *app) {})
-	// app.Post("/api/v1/")
+	app.Get("/:url", routes.ResolveURL)
+	app.Post("/api/v1/", routes.ShortenURL)
 
 }
