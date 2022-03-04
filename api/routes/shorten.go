@@ -20,11 +20,11 @@ type request struct {
 }
 
 type response struct {
-	URL            string `json:"url"`
-	CustomShort    string `json:"custom_short"`
-	Expiry         string `json:"expiry"`
-	XrateRemaining string `json:"rate_remaining"`
-	XrateLimitRest string `json:"rate_limit_rest"`
+	URL            string        `json:"url"`
+	CustomShort    string        `json:"custom_short"`
+	Expiry         time.Duration `json:"expiry"`
+	XrateRemaining int           `json:"rate_remaining"`
+	XrateLimitRest int           `json:"rate_limit_rest"`
 }
 
 func ShortenURL(ctx *fiber.Ctx) error {
@@ -83,6 +83,20 @@ func ShortenURL(ctx *fiber.Ctx) error {
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Unable to connect to server"})
 	}
+
+	resp := response{
+		URL:            body.URL,
+		CustomShort:    "",
+		Expiry:         body.Expiry,
+		XrateRemaining: 10,
+		XrateLimitRest: 30,
+	}
+
 	r2.Decr(database.Ctx, ctx.IP())
-	return ctx.Status(fiber.StatusServiceUnavailable).JSON(fiber.Map{"error": "service unavailable"})
+	val, _ = r2.Get(database.Ctx, ctx.IP()).Result()
+	resp.XrateRemaining, _ = strconv.Atoi(val)
+	ttl, _ := r2.TTL(database.Ctx, ctx.IP()).Result()
+	resp.XrateLimitRest = int(ttl / time.Nanosecond / time.Minute)
+	resp.CustomShort = os.Getenv("DOMAIN") + "/" + id
+	return ctx.Status(fiber.StatusOK).JSON(resp)
 }
