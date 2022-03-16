@@ -7,5 +7,5 @@ docker-compose up
 This project has two main url
 | url     | functionality |
 | ---      | ---       |
-| localhost:3000/:url | Get method, if url exist in db redirect to main url|
-| localhost:3000/api/va1 | Post method, user send url,expiry and short parameters with body        |
+| /:url | Get method, if url exist in db redirect to main url|
+| /api/va1 | Post method, user send url,expiry and short parameters with body        |
